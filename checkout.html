@@ -1,0 +1,31 @@
+
+{% extends "base.html" %}
+
+{% block title %}Checkout - QuickBite{% endblock %}
+
+{% block content %}
+<div class="container page-content">
+  <h2 class="text-center mb-3">Checkout</h2>
+
+  <div class="card">
+    <h3 class="mb-2">Order Summary</h3>
+    <ul class="list-group">
+      {% for item in cart %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          {{ item.name }} (x{{ item.quantity }})
+          <span>₹{{ item.price * item.quantity }}</span>
+        </li>
+      {% endfor %}
+    </ul>
+    <div class="card-body">
+      <h4 class="card-title">Total: ₹{{ total_amount }}</h4>
+    </div>
+  </div>
+
+  <form action="{{ url_for('checkout') }}" method="POST" class="mt-3">
+    <div class="text-center">
+      <button type="submit" class="btn btn-primary">Confirm and Pay</button>
+    </div>
+  </form>
+</div>
+{% endblock %}
