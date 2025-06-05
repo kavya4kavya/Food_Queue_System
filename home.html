@@ -1,0 +1,87 @@
+<!-- templates/home.html -->
+{% extends "base.html" %}
+
+{% block title %}QuickBite - Welcome{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <div class="container">
+        <div class="hero-content">
+            <h1>Welcome to QuickBite</h1>
+            <p>Order delicious meals from your campus cafeteria with ease. Skip the lines, save time!</p>
+            <div class="cta-buttons">
+                {% if not session.user_id %}
+                    <a href="{{ url_for('register') }}" class="btn btn-primary">Get Started</a>
+                    <a href="{{ url_for('login') }}" class="btn btn-secondary">Login</a>
+                {% else %}
+                    <a href="{{ url_for('menu') }}" class="btn btn-primary">Browse Menu</a>
+                    <a href="{{ url_for('my_orders') }}" class="btn btn-secondary">My Orders</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="features">
+    <div class="container">
+        <div class="card">
+            <h2>Why Choose QuickBite?</h2>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Fast Ordering</h3>
+                    <p>Order in seconds, skip the queue and get your food faster than ever before.</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">📱</div>
+                    <h3>Live Tracking</h3>
+                    <p>Track your order in real-time with live updates and estimated wait times.</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">💳</div>
+                    <h3>Easy Payment</h3>
+                    <p>Secure online payments with multiple payment options for your convenience.</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🍔</div>
+                    <h3>Fresh Food</h3>
+                    <p>All meals are prepared fresh by our experienced campus cafeteria chefs.</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">⏰</div>
+                    <h3>Save Time</h3>
+                    <p>No more waiting in long lines. Perfect for busy students on the go.</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">📊</div>
+                    <h3>Order History</h3>
+                    <p>Keep track of all your orders and reorder your favorites with one click.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="stats">
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-number">500+</div>
+                <div class="stat-label">Happy Students</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">1000+</div>
+                <div class="stat-label">Orders Completed</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">15+</div>
+                <div class="stat-label">Menu Items</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">5 Min</div>
+                <div class="stat-label">Average Wait Time</div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
