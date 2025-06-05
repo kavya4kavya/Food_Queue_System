@@ -1,0 +1,309 @@
+<!-- templates/menu.html -->
+{% extends "base.html" %}
+
+{% block title %}Menu - QuickBite{% endblock %}
+
+{% block content %}
+<div class="page-content">
+    <div class="container">
+        <div class="page-header">
+            <h1>Today's Menu</h1>
+            <div class="cart-info">
+                <span id="cart-count">0</span> items in cart
+                <button class="btn btn-primary" id="view-cart-btn" onclick="openCartModal()" style="display: none;">
+                    View Cart
+                </button>
+                <form action="{{ url_for('checkout') }}" method="POST" style="display: inline;">
+  <button type="submit" class="btn btn-primary">Checkout</button>
+</form>
+
+            </div>
+        </div>
+
+        <div class="menu-filters">
+            <button class="filter-btn active" data-category="all">All Items</button>
+            <button class="filter-btn" data-category="Main Course">Main Course</button>
+            <button class="filter-btn" data-category="Salad">Salads</button>
+            <button class="filter-btn" data-category="Sides">Sides</button>
+            <button class="filter-btn" data-category="Beverages">Beverages</button>
+        </div>
+
+        <div class="menu-grid">
+            {% for item in menu_items %}
+            <div class="menu-item" data-category="{{ item.category if item.category else 'Main Course' }}">
+                <div class="menu-item-image">
+                    {% if item.image_url %}
+                        <img src="{{ item.image_url }}" alt="{{ item.name }}" loading="lazy">
+                    {% else %}
+                        <div class="placeholder-image">
+                            {% if 'burger' in item.name.lower() %}🍔
+                            {% elif 'pizza' in item.name.lower() %}🍕
+                            {% elif 'salad' in item.name.lower() %}🥗
+                            {% elif 'wrap' in item.name.lower() %}🌯
+                            {% elif 'fries' in item.name.lower() %}🍟
+                            {% elif 'shake' in item.name.lower() or 'drink' in item.name.lower() %}🥤
+                            {% elif 'taco' in item.name.lower() %}🌮
+                            {% else %}🍽️
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="menu-item-content">
+                    <h3>{{ item.name }}</h3>
+                    <p class="menu-item-description">{{ item.description }}</p>
+                    <div class="menu-item-footer">
+                        <div class="menu-item-price">${{ "%.2f"|format(item.price) }}</div>
+                        <div class="quantity-controls">
+                            <button class="qty-btn" onclick="changeQuantity({{ item.id }}, -1)">-</button>
+                            <span class="quantity" id="qty-{{ item.id }}">1</span>
+                            <button class="qty-btn" onclick="changeQuantity({{ item.id }}, 1)">+</button>
+                        </div>
+                        <button class="btn btn-primary add-to-cart-btn" onclick="addToCart({{ item.id }}, '{{ item.name }}', {{ item.price }})">
+                            Add to Cart
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Cart Summary Modal -->
+<div id="cart-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Cart Summary</h3>
+            <span class="close" onclick="closeCartModal()">&times;</span>
+        </div>
+        <div class="modal-body" id="cart-items">
+            <!-- Cart items will be populated here -->
+        </div>
+        <div class="modal-footer">
+            <div class="cart-total">Total: $<span id="cart-total">0.00</span></div>
+            <button class="btn btn-secondary" onclick="closeCartModal()">Continue Shopping</button>
+            <button class="btn btn-danger" onclick="clearCart()" style="margin-right: 10px;">Clear Cart</button>
+            <a href="{{ url_for('checkout') }}" class="btn btn-primary">Checkout</a>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast" class="toast">
+    <span id="toast-message"></span>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    let cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+    
+    // Update cart display on page load
+    updateCartDisplay();
+    setupMenuFilters();
+    
+    function changeQuantity(itemId, change) {
+        const qtyElement = document.getElementById(`qty-${itemId}`);
+        let currentQty = parseInt(qtyElement.textContent);
+        currentQty = Math.max(1, currentQty + change);
+        qtyElement.textContent = currentQty;
+    }
+    
+    function addToCart(itemId, itemName, itemPrice) {
+        const quantity = parseInt(document.getElementById(`qty-${itemId}`).textContent);
+        
+        // Check if item already in cart
+        const existingItem = cart.find(item => item.id === itemId);
+        if (existingItem) {
+            existingItem.quantity += quantity;
+        } else {
+            cart.push({
+                id: itemId,
+                name: itemName,
+                price: itemPrice,
+                quantity: quantity
+            });
+        }
+        
+        // Save to localStorage
+        localStorage.setItem('cart', JSON.stringify(cart));
+        
+        // Update cart display
+        updateCartDisplay();
+        
+        // Reset quantity to 1
+        document.getElementById(`qty-${itemId}`).textContent = '1';
+        
+        // Show toast notification
+        showToast(`${itemName} added to cart!`);
+        
+        // Send to backend if user is logged in
+        fetch('/add_to_cart', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                item_id: itemId,
+                quantity: quantity
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (!data.success) {
+                console.error('Failed to add item to cart on server');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+    
+    function updateCartDisplay() {
+        const cartCountElement = document.getElementById('cart-count');
+        const viewCartBtn = document.getElementById('view-cart-btn');
+        const checkoutBtn = document.getElementById('checkout-btn');
+        
+        cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+        cartCountElement.textContent = cartCount;
+        
+        if (cartCount > 0) {
+            viewCartBtn.style.display = 'inline-block';
+            checkoutBtn.style.display = 'inline-block';
+        } else {
+            viewCartBtn.style.display = 'none';
+            checkoutBtn.style.display = 'none';
+        }
+    }
+    
+    function openCartModal() {
+        const modal = document.getElementById('cart-modal');
+        const cartItemsContainer = document.getElementById('cart-items');
+        const cartTotalElement = document.getElementById('cart-total');
+        
+        // Clear previous content
+        cartItemsContainer.innerHTML = '';
+        
+        if (cart.length === 0) {
+            cartItemsContainer.innerHTML = '<p>Your cart is empty</p>';
+            cartTotalElement.textContent = '0.00';
+        } else {
+            let total = 0;
+            
+            cart.forEach((item, index) => {
+                const itemTotal = item.price * item.quantity;
+                total += itemTotal;
+                
+                const cartItem = document.createElement('div');
+                cartItem.className = 'cart-item';
+                cartItem.innerHTML = `
+                    <div class="cart-item-info">
+                        <h4>${item.name}</h4>
+                        <p>$${item.price.toFixed(2)} each</p>
+                    </div>
+                    <div class="cart-item-controls">
+                        <button class="qty-btn" onclick="updateCartItemQuantity(${index}, -1)">-</button>
+                        <span class="quantity">${item.quantity}</span>
+                        <button class="qty-btn" onclick="updateCartItemQuantity(${index}, 1)">+</button>
+                        <button class="btn btn-danger btn-sm" onclick="removeFromCart(${index})">Remove</button>
+                    </div>
+                    <div class="cart-item-total">$${itemTotal.toFixed(2)}</div>
+                `;
+                cartItemsContainer.appendChild(cartItem);
+            });
+            
+            cartTotalElement.textContent = total.toFixed(2);
+        }
+        
+        modal.style.display = 'block';
+    }
+    
+    function closeCartModal() {
+        document.getElementById('cart-modal').style.display = 'none';
+    }
+    
+    function updateCartItemQuantity(index, change) {
+        if (cart[index]) {
+            cart[index].quantity += change;
+            if (cart[index].quantity <= 0) {
+                cart.splice(index, 1);
+            }
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartDisplay();
+            openCartModal(); // Refresh modal content
+        }
+    }
+    
+    function removeFromCart(index) {
+        if (cart[index]) {
+            showToast(`${cart[index].name} removed from cart`);
+            cart.splice(index, 1);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartDisplay();
+            openCartModal(); // Refresh modal content
+        }
+    }
+    
+    function clearCart() {
+        cart = [];
+        localStorage.setItem('cart', JSON.stringify(cart));
+        updateCartDisplay();
+        closeCartModal();
+        showToast('Cart cleared');
+    }
+    
+    function setupMenuFilters() {
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const menuItems = document.querySelectorAll('.menu-item');
+        
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove active class from all buttons
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                
+                // Add active class to clicked button
+                this.classList.add('active');
+                
+                const category = this.dataset.category;
+                
+                // Filter menu items
+                menuItems.forEach(item => {
+                    if (category === 'all' || item.dataset.category === category) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        });
+    }
+    
+    function showToast(message) {
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toast-message');
+        
+        toastMessage.textContent = message;
+        toast.classList.add('show');
+        
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 3000);
+    }
+    
+    // Close modal when clicking outside of it
+    window.onclick = function(event) {
+        const modal = document.getElementById('cart-modal');
+        if (event.target === modal) {
+            closeCartModal();
+        }
+    }
+    
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closeCartModal();
+        }
+    });
+</script>
+{% endblock %}
