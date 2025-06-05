@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile - QuickBite{% endblock %}
+
+{% block content %}
+<div class="container page-content">
+  <h2 class="text-center mb-3">My Profile</h2>
+
+  <div class="profile-section">
+    <h3>Student Information</h3>
+    <p><strong>Name:</strong> {{ student.full_name }}</p>
+    <p><strong>Student ID:</strong> {{ student.student_id }}</p>
+    <p><strong>Email:</strong> {{ student.email }}</p>
+    <p><strong>Registered On:</strong> {{ student.created_at.strftime('%d %b %Y') }}</p>
+  </div>
+
+  <div class="profile-section">
+    <h3>Order Statistics</h3>
+    <div class="profile-stats">
+      <div class="stat-card">
+        <h3>{{ total_orders }}</h3>
+        <p>Total Orders</p>
+      </div>
+      <div class="stat-card">
+        <h3>{{ completed_orders }}</h3>
+        <p>Completed Orders</p>
+      </div>
+      <div class="stat-card">
+        <h3>₹{{ total_spent }}</h3>
+        <p>Total Spent</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="text-center mt-3">
+    <a href="{{ url_for('orders') }}" class="btn btn-secondary">View My Orders</a>
+  </div>
+</div>
+{% endblock %}
