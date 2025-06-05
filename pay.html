@@ -1,0 +1,48 @@
+<!-- templates/pay.html -->
+{% extends "base.html" %}
+
+{% block title %}Payment - QuickBite{% endblock %}
+
+{% block content %}
+<div class="page-content">
+  <div class="container">
+    <div class="page-header">
+      <h1>Payment</h1>
+      <p>Please review your order and proceed with payment.</p>
+    </div>
+
+    <div class="payment-summary">
+      <h3>Order Summary</h3>
+      <div id="order-details">
+        <!-- Order details will be dynamically populated -->
+        <p>Your cart total is: $<span id="cart-total">0.00</span></p>
+      </div>
+
+      <form action="{{ url_for('process_payment') }}" method="POST">
+        <div class="form-group">
+          <label for="card-number">Card Number</label>
+          <input type="text" id="card-number" name="card_number" required>
+        </div>
+        <div class="form-group">
+          <label for="expiry">Expiry Date</label>
+          <input type="text" id="expiry" name="expiry" placeholder="MM/YY" required>
+        </div>
+        <div class="form-group">
+          <label for="cvv">CVV</label>
+          <input type="text" id="cvv" name="cvv" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Pay Now</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Populate cart total from localStorage
+  const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  document.getElementById('cart-total').textContent = total.toFixed(2);
+</script>
+{% endblock %}
