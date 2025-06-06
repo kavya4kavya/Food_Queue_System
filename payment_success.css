@@ -1,0 +1,271 @@
+/* payment_success.css */
+
+.page-content {
+  padding: 3rem 0;
+  min-height: calc(100vh - 200px);
+  background: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.container {
+  max-width: 600px;
+}
+
+.text-center {
+  text-align: center;
+}
+
+/* Success Card */
+.card {
+  background: white;
+  border: none;
+  border-radius: 20px;
+  padding: 3rem 2rem;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: linear-gradient(90deg, #28a745, #20c997, #17a2b8);
+}
+
+/* Success Title */
+.card h2 {
+  color: #155724;
+  font-weight: 700;
+  font-size: 2.2rem;
+  margin-bottom: 1rem;
+  animation: bounceIn 0.8s ease-out;
+}
+
+/* Success Message */
+.card p {
+  color: #6c757d;
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.card p:first-of-type {
+  font-size: 1.2rem;
+  color: #28a745;
+  font-weight: 500;
+}
+
+/* Order Details */
+.card p strong {
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+/* Order ID Styling */
+.card p:nth-of-type(2) {
+  background: #f8f9fa;
+  padding: 1rem;
+  border-radius: 8px;
+  border-left: 4px solid #28a745;
+  margin: 1.5rem 0;
+}
+
+/* Total Amount Styling */
+.card p:nth-of-type(3) {
+  font-size: 1.3rem;
+  color: #ff6b35;
+  font-weight: 700;
+}
+
+/* Tracking Message */
+.card p.mt-2 {
+  background: #e3f2fd;
+  padding: 1rem;
+  border-radius: 8px;
+  border-left: 4px solid #2196f3;
+  margin-top: 2rem;
+  color: #1565c0;
+}
+
+/* Action Buttons */
+.mt-3 {
+  margin-top: 2rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 50px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 160px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #ff6b35, #f7931e);
+  color: white;
+  box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+  background: linear-gradient(135deg, #e55a2b, #e8851a);
+  color: white;
+  text-decoration: none;
+}
+
+.btn-secondary {
+  background: #6c757d;
+  color: white;
+  box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+}
+
+.btn-secondary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(108, 117, 125, 0.4);
+  background: #5a6268;
+  color: white;
+  text-decoration: none;
+}
+
+/* Success Animation */
+@keyframes bounceIn {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Checkmark Animation */
+.card h2::before {
+  content: '✓';
+  display: inline-block;
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #28a745, #20c997);
+  border-radius: 50%;
+  color: white;
+  font-size: 2rem;
+  line-height: 60px;
+  margin-right: 1rem;
+  margin-bottom: 1rem;
+  animation: checkmark 0.6s ease-in-out 0.3s both;
+}
+
+@keyframes checkmark {
+  0% {
+    transform: scale(0) rotate(45deg);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .page-content {
+    padding: 2rem 0;
+  }
+  
+  .container {
+    padding: 0 1rem;
+  }
+  
+  .card {
+    padding: 2rem 1.5rem;
+  }
+  
+  .card h2 {
+    font-size: 1.8rem;
+  }
+  
+  .card h2::before {
+    width: 50px;
+    height: 50px;
+    font-size: 1.5rem;
+    line-height: 50px;
+  }
+  
+  .mt-3 {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .btn {
+    width: 100%;
+    max-width: 250px;
+  }
+}
+
+/* Confetti Effect */
+.confetti {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.confetti-piece {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: #ff6b35;
+  animation: confetti-fall 3s linear infinite;
+}
+
+.confetti-piece:nth-child(2n) {
+  background: #28a745;
+}
+
+.confetti-piece:nth-child(3n) {
+  background: #17a2b8;
+}
+
+.confetti-piece:nth-child(4n) {
+  background: #ffc107;
+}
+
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(-100vh) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(360deg);
+    opacity: 0;
+  }
+}
