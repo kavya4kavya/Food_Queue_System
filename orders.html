@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}My Orders - QuickBite{% endblock %}
+
+{% block content %}
+<div class="container page-content">
+  <h2 class="text-center mb-3">My Orders</h2>
+
+  {% if orders %}
+    <div class="orders-grid">
+      {% for order in orders %}
+        <div class="order-card">
+          <div class="order-header">
+            <span class="order-id">Order #{{ order.id }}</span>
+            <span class="order-status status-{{ order.status|lower|replace(' ', '-') }}">
+              {{ order.status }}
+            </span>
+          </div>
+          <div class="order-details">
+            <p class="order-date">Placed on: {{ order.created_at.strftime('%d %b %Y, %I:%M %p') }}</p>
+            <p class="order-total">Total: ₹{{ order.total_amount }}</p>
+          </div>
+          <div class="order-actions">
+            <a href="{{ url_for('order_status', order_id=order.id) }}" class="btn btn-secondary btn-sm">View Status</a>
+            {% if order.status in ['Placed', 'In Progress'] %}
+              <a href="{{ url_for('cancel_order', order_id=order.id) }}" class="btn btn-danger btn-sm">Cancel Order</a>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-center">You haven't placed any orders yet.</p>
+  {% endif %}
+</div>
+{% endblock %}
