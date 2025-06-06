@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Order Status - QuickBite{% endblock %}
+
+{% block content %}
+<div class="container page-content">
+  <h2 class="text-center mb-3">Order #{{ order.id }} Status</h2>
+
+  <div class="card text-center">
+    <h3 class="mb-2">Current Status:</h3>
+    <p class="order-status status-{{ order.status|lower|replace(' ', '-') }}">
+      {{ order.status }}
+    </p>
+    <p class="mt-2">Estimated Time: {{ order.estimated_time }} minutes</p>
+    <p class="order-date">Placed on: {{ order.created_at.strftime('%d %b %Y, %I:%M %p') }}</p>
+  </div>
+
+  <div class="text-center mt-3">
+    <a href="{{ url_for('orders') }}" class="btn btn-secondary">Back to My Orders</a>
+  </div>
+</div>
+{% endblock %}
